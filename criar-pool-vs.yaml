@@ -1,0 +1,76 @@
+---
+
+- name: bigip automation
+  hosts: bigip
+
+  tasks:
+  - name: Create pool
+    bigip_pool:
+        server: 192.168.152.140
+        user: "admin"
+        password: "admin"
+        pool: "teste_ansible_playbook"
+        state: "present"
+        monitor_type: "and_list"
+        monitors:
+           - "gateway_icmp"
+        lb_method: "ratio-member"
+        validate_certs: "false" 
+    delegate_to: localhost
+
+  - name: Add PoolMember1
+    bigip_pool_member:
+        server: "192.168.152.140"
+        user: "admin"
+        password: "admin"
+        state: "present"
+        pool: "teste_ansible_playbook"
+        host: 10.1.3.47
+        port: 0 
+        validate_certs: "false"
+    delegate_to: localhost
+
+
+  - name: Add PoolMember2
+    bigip_pool_member:
+        server: "192.168.152.140"
+        user: "admin"
+        password: "admin"
+        state: "present"
+        pool: "teste_ansible_playbook"
+        host: 10.1.2.65
+        port: 0 
+        validate_certs: "false"
+    delegate_to: localhost
+
+
+  - name: Add PoolMember3
+    bigip_pool_member:
+        server: "192.168.152.140"
+        user: "admin"
+        password: "admin"
+        state: "present"
+        pool: "teste_ansible_playbook"
+        host: 10.1.2.47
+        port: 0 
+        validate_certs: "false"
+    delegate_to: localhost
+
+
+  - name: Add VirtualServer
+    bigip_virtual_server:
+        server: "192.168.152.140"
+        user: "admin"
+        password: "admin"
+        state: "present"
+        partition: "Common"
+        name: "vs_teste_ansible"
+        destination: 192.168.1.13
+        port: 0
+        pool: "teste_ansible_playbook"
+        snat: "Automap"
+        description: "Test Virtual Server - Ansible" 
+        all_profiles:
+            - "fastL4"
+        validate_certs: "false"
+    delegate_to: localhost                                                                                                                                    

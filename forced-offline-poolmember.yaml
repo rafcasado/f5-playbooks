@@ -1,0 +1,19 @@
+---
+
+- name: Colocando Pool Member em Forced Offline
+  hosts: bigip
+  
+  tasks:
+  - name: PoolMember Forced Offline"
+    bigip_pool_member:
+        server: "192.168.152.140"
+        user: "admin"
+        password: "admin"
+        state: "present"
+        session_state: "disabled"
+        monitor_state: "disabled"
+        pool: "teste_ansible_playbook"
+        host: 10.1.3.47
+        port: 0
+        validate_certs: "false"
+    delegate_to: localhost

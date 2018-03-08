@@ -17,3 +17,12 @@
         port: 0
         validate_certs: "false"
     delegate_to: localhost
+
+  - name: Save the Running Configuration of the BIG-IP
+    bigip_config:
+        save: yes
+        server: "192.168.152.140"
+        user: "admin"
+        password: "admin"
+        validate_certs: "false"
+    delegate_to: localhost

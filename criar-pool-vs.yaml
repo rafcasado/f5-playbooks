@@ -1,6 +1,6 @@
 ---
 
-- name: bigip automation
+- name: BIG-IP Automation
   hosts: bigip
 
   tasks:
@@ -18,46 +18,24 @@
         validate_certs: "false" 
     delegate_to: localhost
 
-  - name: Add PoolMember1
+  - name: Add PoolMembers
     bigip_pool_member:
         server: "192.168.152.140"
         user: "admin"
         password: "admin"
         state: "present"
+        host: "{{ item.host }}"
         pool: "teste_ansible_playbook"
-        host: 10.1.3.47
-        port: 0 
+        port: 0
         validate_certs: "false"
+    with_items: 
+        - host: "10.1.3.47"
+        - host: "10.1.2.65"
+        - host: "10.0.0.22"
     delegate_to: localhost
 
 
-  - name: Add PoolMember2
-    bigip_pool_member:
-        server: "192.168.152.140"
-        user: "admin"
-        password: "admin"
-        state: "present"
-        pool: "teste_ansible_playbook"
-        host: 10.1.2.65
-        port: 0 
-        validate_certs: "false"
-    delegate_to: localhost
-
-
-  - name: Add PoolMember3
-    bigip_pool_member:
-        server: "192.168.152.140"
-        user: "admin"
-        password: "admin"
-        state: "present"
-        pool: "teste_ansible_playbook"
-        host: 10.1.2.47
-        port: 0 
-        validate_certs: "false"
-    delegate_to: localhost
-
-
-  - name: Add VirtualServer
+  - name: Create VirtualServer
     bigip_virtual_server:
         server: "192.168.152.140"
         user: "admin"
@@ -65,7 +43,7 @@
         state: "present"
         partition: "Common"
         name: "vs_teste_ansible"
-        destination: 192.168.1.13
+        destination: 192.168.1.14
         port: 0
         pool: "teste_ansible_playbook"
         snat: "Automap"
@@ -73,4 +51,14 @@
         all_profiles:
             - "fastL4"
         validate_certs: "false"
-    delegate_to: localhost                                                                                                                                    
+    delegate_to: localhost                     
+
+
+  - name: Save the Running Configuration of the BIG-IP
+    bigip_config:
+        save: yes
+        server: "192.168.152.140"
+        user: "admin"
+        password: "admin"
+        validate_certs: "false"
+    delegate_to: localhost   

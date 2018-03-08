@@ -4,7 +4,7 @@
   hosts: bigip
   
   tasks:
-  - name: PoolMember Forced Offline"
+  - name: PoolMember Online"
     bigip_pool_member:
         server: "192.168.152.140"
         user: "admin"

@@ -1,15 +1,8 @@
 ---
+
 - name: "Teste playbook"
   hosts: bigip
 
   tasks:
   - name: "CAT"
-    shell: cat /config/bigip.license > /tmp/teste_ansible.txt
-    
-  - name: "Big-ip"
-    bigip_command:
-      commands: show sys version
-      server: bigip
-      user: root
-      password: default
-      validate_certs: "false"      
+    shell: cat /config/bigip.license > /tmp/teste_ansible.txt   

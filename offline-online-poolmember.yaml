@@ -36,6 +36,18 @@
     tags: 
        - online-pool-member    
 
+  - name: Sync configuration from device to group
+    bigip_configsync_actions:
+        device_group: "sync-failover"
+        sync_device_to_group: yes
+        server: "192.168.152.140"
+        user: "admin"
+        password: "admin        "
+        validate_certs: "false"
+    delegate_to: localhost
+    tags: 
+       - sync-to-group
+
   - name: Save the Running Configuration of the BIG-IP
     bigip_config:
         save: yes

@@ -1,8 +1,31 @@
 ---
-
 - name: "Teste playbook"
   hosts: bigip
-
+  
   tasks:
-  - name: "CAT"
-    shell: cat /config/bigip.license > /tmp/teste_ansible.txt   
+  - name: "COLETAR STATUS BIGIP1"
+    shell: tmsh show cm failover-status | tr -s ' ' | sed '/^Status/!d' | cut -d " " -f2  
+    register: bigip1
+    run_once: true
+    delegate_to: 192.168.152.143
+
+  - name: "Teste include!"
+    import_tasks: offline-online-poolmember.yaml
+    tags: 
+       - offline-pool-member
+       - sync-to-group 
+    when: bigip1.stdout == "ACTIVE"
+    run_once: true
+    delegate_to: 192.168.152.143
+
+  - name: "COLETA STATUS BIGIP2"
+    shell: tmsh show cm failover-status | tr -s ' ' | sed '/^Status/!d' | cut -d " " -f2  
+    register: bigip2
+    run_once: true
+    delegate_to: 192.168.152.144
+
+  - name: "VALIDACAO DE STATUS E EXECUCAO DE PLAYBOOK"
+    when: bigip2.stdout == "ACTIVE"
+    shell: echo DEU CERTO
+    run_once: true
+    delegate_to: 192.168.152.144

@@ -4,9 +4,9 @@
   hosts: bigip
   
   tasks:
-  - name: PoolMember Forced Offline"
+  - name: PoolMember Forced Offline
     bigip_pool_member:
-        server: "192.168.152.140"
+        server: "10.1.2.128"
         user: "admin"
         password: "admin"
         state: "present"
@@ -22,7 +22,7 @@
  
   - name: PoolMember Online
     bigip_pool_member:
-        server: "192.168.152.140"
+        server: "10.1.2.128"
         user: "admin"
         password: "admin"
         state: "present"
@@ -40,18 +40,18 @@
     bigip_configsync_actions:
         device_group: "sync-failover"
         sync_device_to_group: yes
-        server: "192.168.152.140"
+        server: "10.1.2.128"
         user: "admin"
-        password: "admin        "
+        password: "admin"
         validate_certs: "false"
     delegate_to: localhost
-    tags: 
+    tags:
        - sync-to-group
 
   - name: Save the Running Configuration of the BIG-IP
     bigip_config:
         save: yes
-        server: "192.168.152.140"
+        server: "10.1.2.128"
         user: "admin"
         password: "admin"
         validate_certs: "false"

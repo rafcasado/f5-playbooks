@@ -1,0 +1,139 @@
+---
+
+- name: BIG-IP Automation
+  hosts: 192.168.152.144
+
+  tasks:
+  - name: Create VLAN - Teste Ansible
+    bigip_vlan:
+        name: "vlan_teste_ansible"
+        server: 192.168.152.144
+        user: "admin"
+        password: "admin"
+        untagged_interfaces: 
+            - 1.1   
+        validate_certs: "false"
+    delegate_to: localhost
+  
+  - name: Create VLAN - Virtual Servers
+    bigip_vlan:
+        name: "vlan_virtual_servers"
+        server: 192.168.152.144
+        user: "admin"
+        password: "admin"
+        untagged_interfaces: 
+            - 1.2  
+        validate_certs: "false"
+    delegate_to: localhost
+  
+  - name: Create VLAN - Sync
+    bigip_vlan:
+        name: "vlan_sync"
+        server: 192.168.152.144
+        user: "admin"
+        password: "admin"
+        untagged_interfaces: 
+            - 1.3   
+        validate_certs: "false"
+    delegate_to: localhost
+               
+  - name: Create Self IP - Teste Ansible
+    bigip_selfip:
+        address: "10.1.2.126"
+        name: "self_teste_ansible"
+        netmask: "255.255.0.0"
+        server: 192.168.152.144
+        user: "admin"
+        password: "admin"
+        vlan: "vlan_teste_ansible"
+        allow_service:
+            - all
+        validate_certs: "false"
+    delegate_to: localhost      
+           
+  - name: Create Self IP - Virtual Servers
+    bigip_selfip:
+        address: "192.168.1.34"
+        name: "self_virtual_servers"
+        netmask: "255.255.255.0"
+        server: 192.168.152.144
+        user: "admin"
+        password: "admin"
+        vlan: "vlan_virtual_servers"
+        allow_service:
+            - all
+        validate_certs: "false"
+    delegate_to: localhost      
+
+  - name: Create Self IP - Sync
+    bigip_selfip:
+        address: "1.1.1.5"
+        name: "self_sync"
+        netmask: "255.255.255.0"
+        server: 192.168.152.144
+        user: "admin"
+        password: "admin"
+        vlan: "vlan_sync"
+        allow_service:
+            - all
+        validate_certs: "false"
+    delegate_to: localhost
+
+  - name: Create pool
+    bigip_pool:
+        server: 192.168.152.144
+        user: "admin"
+        password: "admin"
+        pool: "teste_ansible_playbook"
+        state: "present"
+        monitor_type: "and_list"
+        monitors:
+           - "gateway_icmp"
+        lb_method: "ratio-member"
+        validate_certs: "false" 
+    delegate_to: localhost
+
+  - name: Add PoolMembers
+    bigip_pool_member:
+        server: "192.168.152.144"
+        user: "admin"
+        password: "admin"
+        state: "present"
+        host: "{{ item.host }}"
+        pool: "teste_ansible_playbook"
+        port: 0
+        validate_certs: "false"
+    with_items: 
+        - host: "10.1.3.47"
+        - host: "10.1.2.65"
+        - host: "10.0.0.22"
+    delegate_to: localhost
+
+
+  - name: Create VirtualServer
+    bigip_virtual_server:
+        server: "192.168.152.144"
+        user: "admin"
+        password: "admin"
+        state: "present"
+        partition: "Common"
+        name: "vs_teste_ansible"
+        destination: 192.168.1.14
+        port: 0
+        pool: "teste_ansible_playbook"
+        snat: "Automap"
+        description: "Test Virtual Server - Ansible" 
+        all_profiles:
+            - "fastL4"
+        validate_certs: "false"
+    delegate_to: localhost                     
+
+
+  - name: Save the Running Configuration of the BIG-IP
+    bigip_config:
+        save: yes
+        server: "192.168.152.144"
+        user: "admin"
+        password: "admin"
+        validate_certs: "false"
+    delegate_to: localhost   
